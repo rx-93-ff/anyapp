@@ -6,7 +6,7 @@ from PIL import Image
  
 load_dotenv()
  
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+genai.configure(api_key=os.getenv("AIzaSyAy8q7xSZ8Z6o3q10leBjnobz1NGgm5i_g"))
  
 st.set_page_config(page_title="DiSC Chatbot",page_icon="🗣️")
  
