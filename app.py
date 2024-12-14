@@ -2,69 +2,50 @@ from dotenv import load_dotenv
 import streamlit as st
 import os
 import google.generativeai as genai
-
-# 환경 변수 로드
+from PIL import Image
+ 
 load_dotenv()
+ 
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+ 
+st.set_page_config(page_title="DiSC Chatbot",page_icon="🗣️")
+ 
+st.header("DiSC Chatbot")
+ 
+question = st.text_input("Write your question here...")
+ 
+image = ""
+ 
+submit = st.button("Submit")
 
-# Google Generative AI 설정
-genai.configure(api_key=os.getenv("AIzaSyAy8q7xSZ8Z6o3q10leBjnobz1NGgm5i_g"))
+input_prompt = """You are a chatbot specialized in providing insights about the DiSC personality model, focusing on compatibility and relationships. Your role is to answer user questions about the DiSC types, their strengths, weaknesses, and how different types interact with each other in relationships and teamwork.
 
-# Streamlit 설정
-st.set_page_config(page_title="DiSC Chatbot", page_icon="🤖")
+Key aspects of your expertise:
+1. DiSC personality types: Dominance (D), Influence (I), Steadiness (S), and Conscientiousness (C).
+2. Compatibility: Provide insights on how different DiSC types complement or challenge each other in relationships or collaborations.
+3. Practical advice: Offer specific examples, practical tips, and relatable scenarios to help users understand how to interact effectively with different types.
 
-st.header("DiSC Personality Chatbot")
+User question format examples:
+- "My DiSC type is D. What type of person would I get along with in a relationship?"
+- "How can an S type best work with a D type in a team?"
+- "What are the common challenges between I and C types in communication?"
 
-# DiSC 데이터 정의
-disc_data = {
-    "D": {
-        "description": "Dominance - Results-oriented, direct, and decisive.",
-        "matches": ["I", "C"],
-        "conflicts": ["D"]
-    },
-    "I": {
-        "description": "Influence - Enthusiastic, outgoing, and sociable.",
-        "matches": ["D", "S"],
-        "conflicts": ["I"]
-    },
-    "S": {
-        "description": "Steadiness - Calm, patient, and supportive.",
-        "matches": ["I", "C"],
-        "conflicts": ["D"]
-    },
-    "C": {
-        "description": "Conscientiousness - Analytical, detail-oriented, and reserved.",
-        "matches": ["S", "D"],
-        "conflicts": ["I"]
-    }
-}
+Tone:
+- Friendly, conversational, and easy to understand.
+- Expert but approachable, as if a coach or mentor is speaking.
 
-# 사용자 질문 입력
-st.subheader("Ask a Question about DiSC!")
-user_question = st.text_input("Ask anything about DiSC types, compatibility, or personal traits:")
+Instructions:
+1. Always start with a concise answer to the user's specific question.
+2. Follow up with deeper insights or additional suggestions.
+3. Use real-life examples or scenarios for better understanding.
+4. Avoid generic or repetitive answers; focus on personalized and context-aware responses.
 
-# AI 기반 응답 생성
-if user_question:
-    # AI 프롬프트 생성
-    base_prompt = """
-    You are an expert in DiSC personality typing. Analyze the following question and provide an accurate and insightful response.
-    Be specific, reference personality traits, and suggest compatibility or strategies where necessary.
-    
-    DiSC data to use:
-    - D: Dominance. Matches: I, C. Conflicts: D.
-    - I: Influence. Matches: D, S. Conflicts: I.
-    - S: Steadiness. Matches: I, C. Conflicts: D.
-    - C: Conscientiousness. Matches: S, D. Conflicts: I.
-    
-    Question:
-    """
-    prompt = base_prompt + f"\n{user_question}\n"
+Goal:
+Help users understand themselves and others better through the lens of DiSC, improving relationships and communication in their personal and professional lives.
 
-    # 모델 호출
-    try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content([prompt])
-        st.subheader("AI Response:")
-        st.write(response.text)
-    except Exception as e:
-        st.error("Error generating response. Please try again later.")
-        st.error(f"Details: {e}")
+"""
+ 
+if submit:
+    model = genai.GenerativeModel("gemini-1.5-pro")
+    response = model.generate_content([input_prompt,image,question])
+    st.write(response.text)
